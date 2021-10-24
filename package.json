@@ -1,6 +1,6 @@
 {
 	"name": "weky-slash",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A fun npm package to play games within Discord with buttons!",
 	"main": "index.js",
 	"types": "typings/index.d.ts",
