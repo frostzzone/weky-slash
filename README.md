@@ -18,12 +18,13 @@
 - 🎉 Easy to use
 - ✨ Simple
 - 🔘 Discord Buttons
+- 💻 Supports Slash Commands (V13)
 - 🤖 Supports Discord.js V13 and V12
 - and much more!
 
 ## Install the package 📥
 ```sh
-npm install weky
+npm install weky-slash
 ```
 
 ## Usage 📚
