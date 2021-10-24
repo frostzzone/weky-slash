@@ -106,6 +106,39 @@ client.on('messageCreate', async (message) => {
 
 client.login('DISCORD_BOT_TOKEN');
 ```
+
+#### Discord.js v13.1.0 (Slash Commands)
+```js
+const Discord = require('discord.js');
+const client = new Discord.Client();
+const { Calculator } = require('weky');
+
+client.on('ready', async () => {
+	console.log(`Logged in as ${client.user.tag}`);
+});
+
+client.on('interactionCreate', async (interaction) => {
+	if (interaction.commandName === 'calculator') {
+		interaction.deferReply() // Optional
+
+		await Calculator({
+			message: interaction,
+			slash: true,
+			embed: {
+				title: 'Calculator | Weky Development',
+				color: '#5865F2',
+				footer: '©️ Weky Development',
+				timestamp: true,
+			},
+			disabledQuery: 'Calculator is disabled!',
+			invalidQuery: 'The provided equation is invalid!',
+			othersMessage: 'Only <@{{author}}> can use the buttons!',
+		});
+	}
+});
+
+client.login('DISCORD_BOT_TOKEN');
+```
 ## Result 📤
 <img src="https://i.imgur.com/DEdhHHd.png">
 
@@ -117,6 +150,7 @@ client.login('DISCORD_BOT_TOKEN');
 - **[Face#5454](https://github.com/face-hh)**
 - **[Sujal Goel#7602](https://github.com/sujalgoel)**
 - **[rayz#4986](https://github.com/rayzdev)**
+- **[bluey#0012](https://github.com/bluee-js)** (Slash Commands Support)
 
 ## Support ❔
 <a href="https://discord.gg/ANzBrkcXZy"><img src="https://invidget.switchblade.xyz/ANzBrkcXZy" /></a>

@@ -11,6 +11,14 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {
 		throw new TypeError('Weky Error: embed must be an object.');
@@ -192,7 +200,7 @@ module.exports = async (options) => {
 		.setLabel(options.buttonText)
 		.setCustomId(id);
 
-	const mes = await options.message.reply({
+	const mes = await functions.safeReply(options.message, options.slash, {
 		embeds: [embed],
 		components: [{ type: 1, components: [btn1] }],
 	});
@@ -267,7 +275,7 @@ module.exports = async (options) => {
 				if (options.embed.timestamp) {
 					__embed.setTimestamp();
 				}
-				options.message.reply({
+				functions.safeReply(options.message, options.slash, {
 					embeds: [__embed],
 				});
 				data.delete(options.message.author.id);
@@ -284,7 +292,7 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				__embed.setTimestamp();
 			}
-			options.message.reply({
+			functions.safeReply(options.message, options.slash, {
 				embeds: [__embed],
 			});
 		} else {
@@ -314,7 +322,7 @@ module.exports = async (options) => {
 						},
 					],
 				});
-				options.message.reply({
+				functions.safeReply(options.message, options.slash, {
 					embeds: [_embed],
 				});
 				data.delete(options.message.author.id);
@@ -332,7 +340,7 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.reply({
+			functions.safeReply(options.message, options.slash, {
 				embeds: [_embed],
 			});
 		}
@@ -365,7 +373,7 @@ module.exports = async (options) => {
 				],
 			});
 			data.delete(options.message.author.id);
-			options.message.reply({
+			functions.safeReply(options.message, options.slash, {
 				embeds: [_embed],
 			});
 		}
@@ -412,7 +420,7 @@ module.exports = async (options) => {
 		if (options.embed.timestamp) {
 			_embed.setTimestamp();
 		}
-		options.message.reply({
+		functions.safeReply(options.message, options.slash, {
 			embeds: [_embed],
 		});
 		data.delete(options.message.author.id);

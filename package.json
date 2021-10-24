@@ -1,25 +1,25 @@
 {
-	"name": "weky",
+	"name": "weky-slash",
 	"version": "3.1.8",
 	"description": "A fun npm package to play games within Discord with buttons!",
 	"main": "index.js",
 	"types": "typings/index.d.ts",
 	"scripts": {
-		"test": "nodemon test/test.js"
+		"test": "nodemon test/original.test.js"
 	},
 	"keywords": [
 		"weky",
 		"discord-games"
 	],
-	"homepage": "https://github.com/WekyDev/weky-npm#readme",
+	"homepage": "https://github.com/bluee-js/weky-npm#readme",
 	"license": "CC BY-NC-ND 4.0",
 	"bugs": {
-		"url": "https://github.com/WekyDev/weky-npm/issues"
+		"url": "https://github.com/bluee-js/weky-npm/issues"
 	},
 	"author": "Face#5454 + Sujal Goel#7602 + rayz#4986",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/WekyDev/weky-npm.git"
+		"url": "https://github.com/bluee-js/weky-npm.git"
 	},
 	"dependencies": {
 		"chalk": "^4.1.1",
