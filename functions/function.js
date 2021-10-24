@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 const fetch = require('node-fetch');
 const words = require('../data/words.json');
 const { boxConsole } = require('./boxConsole');
-const { MessageActionRow, MessageButton } = require('discord.js');
+const { MessageActionRow, MessageButton, CommandInteraction } = require('discord.js');
 
 module.exports = {
 	fetchhtml: async function(url) {
@@ -189,4 +189,21 @@ module.exports = {
 			return btn;
 		}
 	},
+	safeReply: async function (message, slash, options = {}) {
+		let msg;
+
+		if (slash) {
+			options.fetchReply = true;
+
+			if (!message.replied) {
+				msg = await message.reply(options);
+			} else {
+				msg = await message.editReply(options);
+			}
+		} else {
+			msg = await message.reply(options);
+		}
+
+		return msg;
+	}
 };
