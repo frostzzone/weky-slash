@@ -3,6 +3,7 @@
 ````js
 await WillYouPressTheButton({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Will you press the button? | Weky Development',
 		description: '```{{statement1}}```\n**but**\n\n```{{statement2}}```',

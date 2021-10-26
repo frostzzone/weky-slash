@@ -3,6 +3,7 @@
 ```js
 await ShuffleGuess({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Shuffle Guess | Weky Development',
 		color: '#5865F2',

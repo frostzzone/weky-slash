@@ -3,6 +3,7 @@
 ```js
 await Snake({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Snake | Weky Development',
 		description: 'GG, you scored **{{score}}** points!',

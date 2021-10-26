@@ -3,6 +3,7 @@
 ```js
 await Calculator({
     message: message,
+    slash: true,
     embed: {
         title: 'Calculator | Weky Development',
         color: '#5865F2',

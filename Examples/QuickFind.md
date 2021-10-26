@@ -3,6 +3,7 @@
 ```js
 await QuickFind({
     message: message,
+    slash: true,
     embed: {
         title: 'Quick Find | Weky Development',
         color: '#5865F2',

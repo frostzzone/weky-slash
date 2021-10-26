@@ -3,6 +3,7 @@
 ```js
 await LieSwatter({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Lie Swatter | Weky Development',
 		color: '#5865F2',

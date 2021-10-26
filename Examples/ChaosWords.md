@@ -3,6 +3,7 @@
 ```js
 await ChaosWords({
     message: message,
+    slash: true,
     embed: {
         title: 'ChaosWords | Weky Development',
         description: 'You have **{{time}}** to find the hidden words in the below sentence.',

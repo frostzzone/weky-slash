@@ -3,6 +3,7 @@
 ```js
 await GuessThePokemon({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Guess The Pokémon | Weky Development',
 		description:

@@ -44,4 +44,4 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login("BOT_TOKEN");
+client.login("YOUR_BOT_TOKEN");

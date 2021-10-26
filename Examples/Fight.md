@@ -3,6 +3,7 @@
 ```js
 await Fight({
     message: message,
+    slash: true,
     opponent: message.mentions.users.first(),
     embed: {
         title: 'Fight | Weky Development',

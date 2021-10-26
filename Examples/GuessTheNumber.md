@@ -3,6 +3,7 @@
 ```js
 await GuessTheNumber({
 	message: message,
+  slash: true,
 	embed: {
 		title: 'Guess The Number | Weky Development',
 		description: 'You have **{{time}}** to guess the number.',

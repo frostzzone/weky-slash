@@ -3,6 +3,7 @@
 ```js
 await FastType({
     message: message,
+    slash: true,
     embed: {
         title: 'FastType | Weky Development',
         description: 'You have **{{time}}** to type the below sentence.',

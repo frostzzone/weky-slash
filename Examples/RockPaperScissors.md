@@ -3,6 +3,7 @@
 ```js
 await RockPaperScissors({
 	message: message,
+	slash: true,
 	opponent: message.mentions.users.first(),
 	embed: {
 		title: 'Rock Paper Scissors | Weky Development',

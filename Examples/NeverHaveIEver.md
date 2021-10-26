@@ -3,6 +3,7 @@
 ```js
 await NeverHaveIEver({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Never Have I Ever | Weky Development',
 		color: '#5865F2',

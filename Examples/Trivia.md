@@ -3,6 +3,7 @@
 ```js
 await Trivia({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Trivia | Weky Development',
 		description: 'You only have **{{time}}** to guess the answer!',

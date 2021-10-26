@@ -11,15 +11,17 @@
 
 ## What is weky?
 - A fun npm package to play games within Discord with buttons!
-- looking for examples? click here: [Examples](https://github.com/WekyDev/weky-npm/tree/main/Examples)
+- looking for examples? click here: [Examples](https://github.com/bluee-js/weky-npm/tree/main/Examples)
+-
+- **ATENTION!** This package is a fork from 'weky' and it does not work as the original one.
 
 ## Features
 - 🧑 Beginner friendly
 - 🎉 Easy to use
 - ✨ Simple
 - 🔘 Discord Buttons
-- 💻 Supports Slash Commands (V13)
-- 🤖 This fork only supports Discord.JS V13
+- 💻 Supports Slash Commands
+- 🤖 Supports Discord.JS V13
 - and much more!
 
 ## Install the package 📥
@@ -29,7 +31,7 @@ npm install weky-slash
 
 ## Usage 📚
 ```js
-const { Calculator } = require("weky");
+const { Calculator } = require("weky-slash");
 await Calculator({
     message: message,
     embed: {
@@ -50,7 +52,7 @@ await Calculator({
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { Calculator } = require('weky');
+const { Calculator } = require('weky-slash');
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}`);
@@ -80,7 +82,7 @@ client.login('DISCORD_BOT_TOKEN');
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { Calculator } = require('weky');
+const { Calculator } = require('weky-slash');
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user.tag}`);
@@ -113,7 +115,7 @@ client.login('DISCORD_BOT_TOKEN');
 
 ## Contributing 🤝
 - Contributions, issues and feature requests are welcome!
-- Feel free to check **[issues page](https://github.com/WekyDev/weky-npm/issues)**.
+- Feel free to check **[issues page](https://github.com/bluee-js/weky-npm/issues)**.
 
 ## Developers 👨‍💻
 - **[Face#5454](https://github.com/face-hh)**

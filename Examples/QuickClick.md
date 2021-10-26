@@ -3,6 +3,7 @@
 ```js
 await QuickClick({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Quick Click | Weky Development',
 		color: '#5865F2',

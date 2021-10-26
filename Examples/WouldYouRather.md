@@ -3,6 +3,7 @@
 ```js
 await WouldYouRather({
 	message: message,
+	slash: true,
 	embed: {
 		title: 'Would you rather... | Weky Development',
 		color: '#5865F2',
