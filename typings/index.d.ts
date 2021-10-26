@@ -1,4 +1,4 @@
-import { Guild, GuildMember, Message, CommandInteraction, User } from 'discord.js';
+import { GuildMember, Message, CommandInteraction, User } from 'discord.js';
 
 interface Calc {
 	message: Message | CommandInteraction;

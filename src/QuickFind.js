@@ -12,6 +12,17 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {
 		throw new TypeError('Weky Error: embed must be an object.');
@@ -130,7 +141,7 @@ module.exports = async (options) => {
 		if (options.embed.timestamp) {
 			embed.setTimestamp();
 		}
-		return options.message.reply({ embeds: [embed] });
+		return functions.safeReply(options.message, options.slash, { embeds: [embed] });
 	}
 
 	if(options.backgroundhex.startsWith('#')) {
@@ -151,7 +162,7 @@ module.exports = async (options) => {
 		embed.setTimestamp();
 	}
 
-	const msg = await options.message.reply({ embeds: [embed] });
+	const msg = await functions.safeReply(options.message, options.slash, { embeds: [embed] });
 
 	currentGames[options.message.guild.id] = true;
 	currentGames[`${options.message.guild.id}_channel`] =

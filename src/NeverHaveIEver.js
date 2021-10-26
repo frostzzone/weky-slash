@@ -1,6 +1,5 @@
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
-const { decode } = require('html-entities');
 const functions = require('../../functions/function');
 
 module.exports = async (options) => {
@@ -12,13 +11,24 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {
 		throw new TypeError('Weky Error: embed must be an object.');
 	}
 
 	if (!options.embed.title) {
-		options.embed.title = 'Would you rather... | Weky Development';
+		options.embed.title = 'Never Have I Ever | Weky Development';
 	}
 	if (typeof options.embed.title !== 'string') {
 		throw new TypeError('Weky Error: embed title must be a string.');
@@ -58,12 +68,12 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: buttons must be an object.');
 	}
 
-	if (!options.buttons.optionA) options.buttons.optionA = 'Option A';
+	if (!options.buttons.optionA) options.buttons.optionA = 'Yes';
 	if (typeof options.buttons.optionA !== 'string') {
 		throw new TypeError('Weky Error: button must be a string.');
 	}
 
-	if (!options.buttons.optionB) options.buttons.optionB = 'Option B';
+	if (!options.buttons.optionB) options.buttons.optionB = 'No';
 	if (typeof options.buttons.optionB !== 'string') {
 		throw new TypeError('Weky Error: button must be a string.');
 	}
@@ -86,7 +96,7 @@ module.exports = async (options) => {
 		'-' +
 		functions.getRandomString(20);
 
-	const think = await options.message.reply({
+	const think = await functions.safeReply(options.message, options.slash, {
 		embeds: [
 			new Discord.MessageEmbed()
 				.setTitle(`${options.thinkMessage}.`)
@@ -102,10 +112,9 @@ module.exports = async (options) => {
 		],
 	});
 
-	const response = await fetch(
-		'https://fun-api.sujalgoel.engineer/wyr',
+	let { statement } = await fetch(
+		'https://api.nhie.io/v1/statements/random?category[]=harmless',
 	).then((res) => res.json());
-	const data = response.data;
 
 	await think.edit({
 		embeds: [
@@ -115,23 +124,7 @@ module.exports = async (options) => {
 		],
 	});
 
-	const res = {
-		questions: [data.option_1.option, data.option_2.option],
-		percentage: {
-			1:
-				(
-					(parseInt(data.option_1.votes) /
-						(parseInt(data.option_1.votes) + parseInt(data.option_2.votes))) *
-					100
-				).toFixed(2) + '%',
-			2:
-				(
-					(parseInt(data.option_2.votes) /
-						(parseInt(data.option_1.votes) + parseInt(data.option_2.votes))) *
-					100
-				).toFixed(2) + '%',
-		},
-	};
+	statement = statement.trim();
 
 	await think.edit({
 		embeds: [
@@ -145,7 +138,6 @@ module.exports = async (options) => {
 		.setStyle('PRIMARY')
 		.setLabel(`${options.buttons.optionA}`)
 		.setCustomId(id1);
-
 	let btn2 = new Discord.MessageButton()
 		.setStyle('PRIMARY')
 		.setLabel(`${options.buttons.optionB}`)
@@ -161,9 +153,7 @@ module.exports = async (options) => {
 
 	const embed = new Discord.MessageEmbed()
 		.setTitle(options.embed.title)
-		.setDescription(
-			`**A)** ${decode(res.questions[0])} \n**B)** ${decode(res.questions[1])}`,
-		)
+		.setDescription(statement)
 		.setColor(options.embed.color)
 		.setFooter(options.embed.footer);
 	if (options.embed.timestamp) {
@@ -179,9 +169,9 @@ module.exports = async (options) => {
 		filter: (fn) => fn,
 	});
 
-	gameCollector.on('collect', async (wyr) => {
-		if (wyr.user.id !== options.message.author.id) {
-			return wyr.reply({
+	gameCollector.on('collect', async (nhie) => {
+		if (nhie.user.id !== options.message.author.id) {
+			return nhie.reply({
 				content: options.othersMessage.replace(
 					'{{author}}',
 					options.message.member.id,
@@ -189,61 +179,39 @@ module.exports = async (options) => {
 				ephemeral: true,
 			});
 		}
-		await wyr.deferUpdate();
-		if (wyr.customId === id1) {
+
+		await nhie.deferUpdate();
+
+		if (nhie.customId === id1) {
 			btn = new Discord.MessageButton()
 				.setStyle('PRIMARY')
-				.setLabel(`${options.buttons.optionA}` + ` (${res.percentage['1']})`)
+				.setLabel(`${options.buttons.optionA}`)
 				.setCustomId(id1)
 				.setDisabled();
 			btn2 = new Discord.MessageButton()
 				.setStyle('SECONDARY')
-				.setLabel(`${options.buttons.optionB}` + ` (${res.percentage['2']})`)
+				.setLabel(`${options.buttons.optionB}`)
 				.setCustomId(id2)
 				.setDisabled();
 			gameCollector.stop();
-			const _embed = new Discord.MessageEmbed()
-				.setTitle(options.embed.title)
-				.setDescription(
-					`**A) ${decode(res.questions[0])} (${
-						res.percentage['1']
-					})** \nB) ${decode(res.questions[1])} (${res.percentage['2']})`,
-				)
-				.setColor(options.embed.color)
-				.setFooter(options.embed.footer);
-			if (options.embed.timestamp) {
-				_embed.setTimestamp();
-			}
-			await wyr.editReply({
-				embeds: [_embed],
+			think.edit({
+				embeds: [embed],
 				components: [{ type: 1, components: [btn, btn2] }],
 			});
-		} else if (wyr.customId === id2) {
+		} else if (nhie.customId === id2) {
 			btn = new Discord.MessageButton()
 				.setStyle('SECONDARY')
-				.setLabel(`${options.buttons.optionA}` + ` (${res.percentage['1']})`)
+				.setLabel(`${options.buttons.optionA}`)
 				.setCustomId(id1)
 				.setDisabled();
 			btn2 = new Discord.MessageButton()
 				.setStyle('PRIMARY')
-				.setLabel(`${options.buttons.optionB}` + ` (${res.percentage['2']})`)
+				.setLabel(`${options.buttons.optionB}`)
 				.setCustomId(id2)
 				.setDisabled();
 			gameCollector.stop();
-			const _embed = new Discord.MessageEmbed()
-				.setTitle(options.embed.title)
-				.setDescription(
-					`A) ${decode(res.questions[0])} (${
-						res.percentage['1']
-					}) \n**B) ${decode(res.questions[1])} (${res.percentage['2']})**`,
-				)
-				.setColor(options.embed.color)
-				.setFooter(options.embed.footer);
-			if (options.embed.timestamp) {
-				_embed.setTimestamp();
-			}
-			await wyr.editReply({
-				embeds: [_embed],
+			think.edit({
+				embeds: [embed],
 				components: [{ type: 1, components: [btn, btn2] }],
 			});
 		}

@@ -19,7 +19,7 @@
 - ✨ Simple
 - 🔘 Discord Buttons
 - 💻 Supports Slash Commands (V13)
-- 🤖 Supports Discord.js V13 and V12
+- 🤖 This fork only supports Discord.JS V13
 - and much more!
 
 ## Install the package 📥
@@ -45,40 +45,8 @@ await Calculator({
 ```
 
 ## Example ✏️
-#### Discord.js v12.5.3
-```js
-const Discord = require('discord.js');
-require('@weky/inlinereply');
-const client = new Discord.Client();
-const disbut = require('discord-buttons');
-const { Calculator } = require('weky');
-disbut(client);
 
-client.on('ready', async () => {
-	console.log(`Logged in as ${client.user.tag}`);
-});
-
-client.on('message', async (message) => {
-	if(message.content === '!calculator') {
-		await Calculator({
-			message: message,
-			embed: {
-				title: 'Calculator | Weky Development',
-				color: '#5865F2',
-				footer: '©️ Weky Development',
-				timestamp: true,
-			},
-			disabledQuery: 'Calculator is disabled!',
-			invalidQuery: 'The provided equation is invalid!',
-			othersMessage: 'Only <@{{author}}> can use the buttons!',
-		});
-	}
-});
-
-client.login('DISCORD_BOT_TOKEN');
-```
-
-#### Discord.js v13.1.0
+#### Discord.js v13
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -108,7 +76,7 @@ client.on('messageCreate', async (message) => {
 client.login('DISCORD_BOT_TOKEN');
 ```
 
-#### Discord.js v13.1.0 (Slash Commands)
+#### Discord.js v13 (Slash Commands)
 ```js
 const Discord = require('discord.js');
 const client = new Discord.Client();

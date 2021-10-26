@@ -12,6 +12,17 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {
 		throw new TypeError('Weky Error: embed must be an object.');
@@ -110,7 +121,7 @@ module.exports = async (options) => {
 		'-' +
 		functions.getRandomString(20);
 
-	const think = await options.message.reply({
+	const think = await functions.safeReply(options.message, options.slash, {
 		embeds: [
 			new Discord.MessageEmbed()
 				.setTitle(`${options.thinkMessage}.`)
@@ -281,7 +292,7 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.reply({
+			functions.safeReply(options.message, options.slash, {
 				embeds: [_embed],
 			});
 		}
@@ -315,7 +326,7 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.reply({
+			functions.safeReply(options.message, options.slash, {
 				embeds: [_embed],
 			});
 		}

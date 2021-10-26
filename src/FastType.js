@@ -1,21 +1,25 @@
 const data = new Set();
 const Discord = require('discord.js');
-const disbut = require('discord-buttons');
-const {
-	convertTime,
-	randomHexColor,
-	getRandomString,
-	checkForUpdates,
-	getRandomSentence,
-} = require('../../functions/function');
+const functions = require('../../functions/function');
 
 module.exports = async (options) => {
-	checkForUpdates();
+	functions.checkForUpdates();
 	if (!options.message) {
 		throw new Error('Weky Error: message argument was not specified.');
 	}
 	if (typeof options.message !== 'object') {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
+	}
+
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
 	}
 
 	if (!options.embed) options.embed = {};
@@ -38,7 +42,7 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: embed color must be a string.');
 	}
 
-	if (!options.embed.color) options.embed.color = randomHexColor();
+	if (!options.embed.color) options.embed.color = functions.randomHexColor();
 	if (typeof options.embed.color !== 'string') {
 		throw new TypeError('Weky Error: embed color must be a string.');
 	}
@@ -56,7 +60,8 @@ module.exports = async (options) => {
 	}
 
 	if (!options.sentence) {
-		options.sentence = getRandomSentence(Math.floor(Math.random() * 10) + 3)
+		options.sentence = functions
+			.getRandomSentence(Math.floor(Math.random() * 10) + 3)
 			.toString()
 			.split(',')
 			.join(' ');
@@ -109,13 +114,13 @@ module.exports = async (options) => {
 	data.add(options.message.author.id);
 
 	const id =
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20);
+		functions.getRandomString(20);
 
 	const sentence = options.sentence
 		.toLowerCase()
@@ -123,16 +128,16 @@ module.exports = async (options) => {
 		.map((msg) => `\`${msg.split('').join(' ')}\``)
 		.join(' ');
 	const gameCreatedAt = Date.now();
-	let btn1 = new disbut.MessageButton()
-		.setStyle('red')
+	let btn1 = new Discord.MessageButton()
+		.setStyle('DANGER')
 		.setLabel(options.buttonText)
-		.setID(id);
+		.setCustomId(id);
 	const embed = new Discord.MessageEmbed()
 		.setTitle(options.embed.title)
 		.setDescription(
 			`${options.embed.description.replace(
 				'{{time}}',
-				convertTime(options.time),
+				functions.convertTime(options.time),
 			)}`,
 		)
 		.addField('Sentence:', `${sentence}`)
@@ -141,18 +146,17 @@ module.exports = async (options) => {
 	if (options.embed.timestamp) {
 		embed.setTimestamp();
 	}
-	const think = await options.message.inlineReply(embed);
-	await think.edit({
-		embed,
+	const think = await functions.safeReply(options.message, options.slash, {
+		embeds: [embed],
 		components: [{ type: 1, components: [btn1] }],
 	});
-	const collector = new Discord.MessageCollector(
-		options.message.channel,
-		(m) => !m.author.bot,
-		{ time: options.time },
-	);
+
+	const collector = await options.message.channel.createMessageCollector({
+		filter: (m) => !m.author.bot && m.author.id === options.message.author.id,
+		time: options.time,
+	});
+
 	collector.on('collect', async (msg) => {
-		if (msg.author.id !== options.message.author.id) return;
 		if (msg.content.toLowerCase().trim() === options.sentence.toLowerCase()) {
 			const time = Date.now() - gameCreatedAt;
 			const minute = (time / 1000 / 60) % 60;
@@ -160,7 +164,7 @@ module.exports = async (options) => {
 			const _embed = new Discord.MessageEmbed()
 				.setDescription(
 					options.winMessage
-						.replace('{{time}}', convertTime(time))
+						.replace('{{time}}', functions.convertTime(time))
 						.replace('{{wpm}}', wpm.toFixed(2)),
 				)
 				.setFooter(options.embed.footer)
@@ -168,14 +172,14 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.inlineReply(_embed);
-			btn1 = new disbut.MessageButton()
-				.setStyle('red')
+			functions.safeReply(options.message, options.slash, { embeds: [_embed] });
+			btn1 = new Discord.MessageButton()
+				.setStyle('DANGER')
 				.setLabel(options.buttonText)
 				.setDisabled()
-				.setID(id);
+				.setCustomId(id);
 			await think.edit({
-				embed,
+				embeds: [embed],
 				components: [{ type: 1, components: [btn1] }],
 			});
 			collector.stop(msg.author.username);
@@ -188,20 +192,21 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.inlineReply(_embed);
+			functions.safeReply(options.message, options.slash, { embeds: [_embed] });
 			collector.stop(msg.author.username);
 			data.delete(options.message.author.id);
-			btn1 = new disbut.MessageButton()
-				.setStyle('red')
+			btn1 = new Discord.MessageButton()
+				.setStyle('DANGER')
 				.setLabel(options.buttonText)
 				.setDisabled()
-				.setID(id);
+				.setCustomId(id);
 			await think.edit({
-				embed,
+				embeds: [embed],
 				components: [{ type: 1, components: [btn1] }],
 			});
 		}
 	});
+
 	collector.on('end', async (_collected, reason) => {
 		if (reason === 'time') {
 			const _embed = new Discord.MessageEmbed()
@@ -211,38 +216,45 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.inlineReply(_embed);
-			btn1 = new disbut.MessageButton()
-				.setStyle('red')
+			functions.safeReply(options.message, options.slash, { embeds: [_embed] });
+			btn1 = new Discord.MessageButton()
+				.setStyle('DANGER')
 				.setLabel(options.buttonText)
 				.setDisabled()
-				.setID(id);
+				.setCustomId(id);
 			await think.edit({
-				embed,
+				embeds: [embed],
 				components: [{ type: 1, components: [btn1] }],
 			});
 			data.delete(options.message.author.id);
 		}
 	});
 
-	const gameCollector = think.createButtonCollector((fn) => fn);
+	const gameCollector = think.createMessageComponentCollector((fn) => fn);
+
 	gameCollector.on('collect', (button) => {
-		if (button.clicker.user.id !== options.message.author.id) {
-			return button.reply.send(
-				options.othersMessage.replace('{{author}}', options.message.author.id),
-				true,
-			);
+		if (button.user.id !== options.message.author.id) {
+			return button.reply({
+				content: options.othersMessage.replace(
+					'{{author}}',
+					options.message.member.id,
+				),
+				ephemeral: true,
+			});
 		}
-		btn1 = new disbut.MessageButton()
-			.setStyle('red')
+		btn1 = new Discord.MessageButton()
+			.setStyle('DANGER')
 			.setLabel(options.buttonText)
 			.setDisabled()
-			.setID(id);
+			.setCustomId(id);
 		think.edit({
-			embed: embed,
+			embeds: [embed],
 			components: [{ type: 1, components: [btn1] }],
 		});
-		button.reply.send(options.cancelMessage, true);
+		button.reply({
+			content: options.cancelMessage,
+			ephemeral: true,
+		});
 		gameCollector.stop();
 		data.delete(options.message.author.id);
 		return collector.stop();

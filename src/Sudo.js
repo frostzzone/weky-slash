@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
-const { checkForUpdates } = require('../../functions/function');
+const functions = require('../../functions/function');
 
 module.exports = async (options) => {
-	checkForUpdates();
+	functions.checkForUpdates();
 	if (!options.message) {
 		throw new Error('Weky Error: message argument was not specified.');
 	}
@@ -10,6 +10,17 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
 	if (!options.member) options.member = options.message.member;
 	if (typeof options.member !== 'object') {
 		throw new TypeError(
@@ -43,7 +54,8 @@ module.exports = async (options) => {
 				}
 			});
 	} else {
-		await webhook.send(Discord.Util.removeMentions(options.text), {
+		await webhook.send({
+			content: Discord.Util.removeMentions(options.text),
 			username: options.member.user.username,
 			avatarURL: options.member.user.displayAvatarURL(),
 		});

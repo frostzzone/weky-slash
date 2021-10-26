@@ -13,6 +13,17 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {
 		throw new TypeError('Weky Error: embed must be an object.');
@@ -163,7 +174,7 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				embed.setTimestamp();
 			}
-			return options.message.reply({ embeds: [embed] });
+			return functions.safeReply(options.message, options.slash, { embeds: [embed] });
 		}
 		const embed = new Discord.MessageEmbed()
 			.setDescription(
@@ -182,7 +193,7 @@ module.exports = async (options) => {
 			.setStyle('DANGER')
 			.setLabel(options.buttonText)
 			.setCustomId(id);
-		const msg = await options.message.reply({
+		const msg = await functions.safeReply(options.message, options.slash, {
 			embeds: [embed],
 			components: [{ type: 1, components: [btn1] }],
 		});
@@ -337,7 +348,7 @@ module.exports = async (options) => {
 					embeds: [embed],
 					components: [{ type: 1, components: [btn1] }],
 				});
-				return options.message.reply({ embeds: [_embed] });
+				return functions.safeReply(options.message, options.slash, { embeds: [_embed] });
 			}
 		});
 	} else {
@@ -361,7 +372,7 @@ module.exports = async (options) => {
 			.setStyle('DANGER')
 			.setLabel(options.buttonText)
 			.setCustomId(id);
-		const msg = await options.message.reply({
+		const msg = await functions.safeReply(options.message, options.slash, {
 			embeds: [embed],
 			components: [{ type: 1, components: [btn1] }],
 		});
@@ -495,7 +506,7 @@ module.exports = async (options) => {
 					components: [{ type: 1, components: [btn1] }],
 				});
 				data.delete(options.message.author.id);
-				return options.message.reply({ embeds: [_embed] });
+				return functions.safeReply(options.message, options.slash, { embeds: [_embed] });
 			}
 		});
 	}

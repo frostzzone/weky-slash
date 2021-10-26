@@ -1,17 +1,9 @@
 const data = new Set();
 const Discord = require('discord.js');
-const { MessageButton, MessageActionRow } = require('discord-buttons');
-const {
-	convertTime,
-	shuffleString,
-	randomHexColor,
-	checkForUpdates,
-	getRandomString,
-	getRandomSentence,
-} = require('../../functions/function');
+const functions = require('../../functions/function');
 
 module.exports = async (options) => {
-	checkForUpdates();
+	functions.checkForUpdates();
 	if (!options.message) {
 		throw new Error('Weky Error: message argument was not specified.');
 	}
@@ -19,7 +11,18 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: Invalid Discord Message was provided.');
 	}
 
-	if (!options.word) options.word = getRandomSentence(1);
+	if (!options.slash) options.slash = false;
+	if (typeof options.slash !== 'boolean') {
+		throw new TypeError('Weky Error: slash must be a boolean.');
+	}
+	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
+		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
+	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
+	
+	if (!options.word) options.word = functions.getRandomSentence(1);
 
 	if (!options.button) options.button = {};
 	if (typeof options.button !== 'object') {
@@ -48,7 +51,7 @@ module.exports = async (options) => {
 		throw new TypeError('Weky Error: embed title must be a string.');
 	}
 
-	if (!options.embed.color) options.embed.color = randomHexColor();
+	if (!options.embed.color) options.embed.color = functions.randomHexColor();
 	if (typeof options.embed.color !== 'string') {
 		throw new TypeError('Weky Error: embed color must be a string.');
 	}
@@ -117,33 +120,33 @@ module.exports = async (options) => {
 	data.add(options.message.author.id);
 
 	const id1 =
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20);
+		functions.getRandomString(20);
 
 	const id2 =
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20) +
+		functions.getRandomString(20) +
 		'-' +
-		getRandomString(20);
+		functions.getRandomString(20);
 
-	const word = shuffleString(options.word.toString());
-	let disbut = new MessageButton()
+	const word = functions.shuffleString(options.word.toString());
+
+	let disbut = new Discord.MessageButton()
 		.setLabel(options.button.reshuffle)
-		.setID(id1)
-		.setStyle('green');
-	let cancel = new MessageButton()
+		.setCustomId(id1)
+		.setStyle('SUCCESS');
+	let cancel = new Discord.MessageButton()
 		.setLabel(options.button.cancel)
-		.setID(id2)
-		.setStyle('red');
-	let row = new MessageActionRow().addComponent(disbut).addComponent(cancel);
+		.setCustomId(id2)
+		.setStyle('DANGER');
 	const emd = new Discord.MessageEmbed()
 		.setColor(options.embed.color)
 		.setTitle(options.embed.title)
@@ -151,40 +154,45 @@ module.exports = async (options) => {
 		.setDescription(
 			options.startMessage
 				.replace('{{word}}', word)
-				.replace('{{time}}', convertTime(options.time)),
+				.replace('{{time}}', functions.convertTime(options.time)),
 		);
 	if (options.embed.timestamp) {
 		emd.setTimestamp();
 	}
-	const embed = await options.message.inlineReply({
-		embed: emd,
+
+	const embed = await functions.safeReply(options.message, options.slash, {
+		embeds: [emd],
+		components: [
+			{
+				type: 1,
+				components: [disbut, cancel],
+			},
+		],
 	});
+
 	const gameCreatedAt = Date.now();
-	embed.edit({
-		embed: emd,
-		component: row,
-	});
 	const filter = (m) => m.author.id === options.message.author.id;
-	const gameCollector = options.message.channel.createMessageCollector(filter, {
+	const gameCollector = options.message.channel.createMessageCollector({
+		filter,
 		time: options.time,
 		errors: ['time'],
 	});
+
 	gameCollector.on('collect', async (msg) => {
 		if (msg.content.toLowerCase() === options.word.toString()) {
 			gameCollector.stop();
 			data.delete(options.message.author.id);
-			disbut = new MessageButton()
+			disbut = new Discord.MessageButton()
 				.setLabel(options.button.reshuffle)
-				.setID(id1)
-				.setStyle('green')
+				.setCustomId(id1)
+				.setStyle('SUCCESS')
 				.setDisabled();
-			cancel = new MessageButton()
+			cancel = new Discord.MessageButton()
 				.setLabel(options.button.cancel)
-				.setID(id2)
-				.setStyle('red')
+				.setCustomId(id2)
+				.setStyle('DANGER')
 				.setDisabled();
-			row = new MessageActionRow().addComponent(disbut).addComponent(cancel);
-			const time = convertTime(Date.now() - gameCreatedAt);
+			const time = functions.convertTime(Date.now() - gameCreatedAt);
 			const _embed = new Discord.MessageEmbed()
 				.setColor(options.embed.color)
 				.setFooter(options.embed.footer)
@@ -196,10 +204,15 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			msg.inlineReply(_embed);
+			msg.reply({ embeds: [_embed] });
 			embed.edit({
-				embed: emd,
-				component: row,
+				embeds: [emd],
+				components: [
+					{
+						type: 1,
+						components: [disbut, cancel],
+					},
+				],
 			});
 		} else {
 			const _embed = new Discord.MessageEmbed()
@@ -213,49 +226,64 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			msg.inlineReply(_embed).then((m) => m.delete({ timeout: 2000 }));
+			msg.reply({ embeds: [_embed] }).then((m) => m.delete({ timeout: 3000 }));
 		}
 	});
-	const GameCollector = embed.createButtonCollector((fn) => fn);
-	GameCollector.on('collect', (btn) => {
-		if (btn.clicker.user.id !== options.message.author.id) {
-			return btn.reply.send(
-				options.othersMessage.replace('{{author}}', options.message.author.id),
-				true,
-			);
+
+	const GameCollector = embed.createMessageComponentCollector({
+		filter: (fn) => fn,
+	});
+
+	GameCollector.on('collect', async (btn) => {
+		if (btn.user.id !== options.message.author.id) {
+			return btn.reply({
+				content: options.othersMessage.replace(
+					'{{author}}',
+					options.message.member.id,
+				),
+				ephemeral: true,
+			});
 		}
-		btn.reply.defer();
-		if (btn.id === id1) {
+		await btn.deferUpdate();
+
+		if (btn.customId === id1) {
 			const _embed = new Discord.MessageEmbed()
 				.setColor(options.embed.color)
 				.setTitle(options.embed.title)
 				.setFooter(options.embed.footer)
 				.setDescription(
 					options.startMessage
-						.replace('{{word}}', shuffleString(options.word.toString()))
-						.replace('{{time}}', convertTime(options.time)),
+						.replace(
+							'{{word}}',
+							functions.shuffleString(options.word.toString()),
+						)
+						.replace('{{time}}', functions.convertTime(options.time)),
 				);
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
 			return embed.edit({
-				embed: _embed,
-				component: row,
+				embeds: [_embed],
+				components: [
+					{
+						type: 1,
+						components: [disbut, cancel],
+					},
+				],
 			});
-		} else if (btn.id === id2) {
+		} else if (btn.customId === id2) {
 			gameCollector.stop();
 			data.delete(options.message.author.id);
-			disbut = new MessageButton()
+			disbut = new Discord.MessageButton()
 				.setLabel(options.button.reshuffle)
-				.setID(id1)
-				.setStyle('green')
+				.setCustomId(id1)
+				.setStyle('SUCCESS')
 				.setDisabled();
-			cancel = new MessageButton()
+			cancel = new Discord.MessageButton()
 				.setLabel(options.button.cancel)
-				.setID(id2)
-				.setStyle('red')
+				.setCustomId(id2)
+				.setStyle('DANGER')
 				.setDisabled();
-			row = new MessageActionRow().addComponent(disbut).addComponent(cancel);
 			const _embed = new Discord.MessageEmbed()
 				.setColor(options.embed.color)
 				.setTitle(options.embed.title)
@@ -267,24 +295,29 @@ module.exports = async (options) => {
 				_embed.setTimestamp();
 			}
 			return embed.edit({
-				embed: _embed,
-				component: row,
+				embeds: [_embed],
+				components: [
+					{
+						type: 1,
+						components: [disbut, cancel],
+					},
+				],
 			});
 		}
 	});
+
 	gameCollector.on('end', async (_collected, reason) => {
 		if (reason === 'time') {
-			disbut = new MessageButton()
+			disbut = new Discord.MessageButton()
 				.setLabel(options.button.reshuffle)
-				.setID(id1)
-				.setStyle('green')
+				.setCustomId(id1)
+				.setStyle('SUCCESS')
 				.setDisabled();
-			cancel = new MessageButton()
+			cancel = new Discord.MessageButton()
 				.setLabel(options.button.cancel)
-				.setID(id2)
-				.setStyle('red')
+				.setCustomId(id2)
+				.setStyle('DANGER')
 				.setDisabled();
-			row = new MessageActionRow().addComponent(disbut).addComponent(cancel);
 			const _embed = new Discord.MessageEmbed()
 				.setColor(options.embed.color)
 				.setFooter(options.embed.footer)
@@ -294,11 +327,16 @@ module.exports = async (options) => {
 			if (options.embed.timestamp) {
 				_embed.setTimestamp();
 			}
-			options.message.inlineReply(_embed);
+			functions.safeReply(options.message, options.slash, { embeds: [_embed] });
 			data.delete(options.message.author.id);
 			return embed.edit({
-				embed: emd,
-				component: row,
+				embeds: [emd],
+				components: [
+					{
+						type: 1,
+						components: [disbut, cancel],
+					},
+				],
 			});
 		}
 	});
