@@ -194,12 +194,7 @@ module.exports = {
 
 		if (slash) {
 			options.fetchReply = true;
-
-			if (!message.replied) {
-				msg = await message.reply(options);
-			} else {
-				msg = await message.followUp(options);
-			}
+			msg = await message.followUp(options);
 		} else {
 			msg = await message.reply(options);
 		}

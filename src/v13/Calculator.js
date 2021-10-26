@@ -18,6 +18,9 @@ module.exports = async (options) => {
 	if (options.slash && !options.message instanceof Discord.CommandInteraction) {
 		throw new TypeError('Weky Error: if slash option is true the suplied message option must be an interaction.');
 	}
+	if (options.slash) {
+		options.message.author = options.message.user;
+	}
 
 	if (!options.embed) options.embed = {};
 	if (typeof options.embed !== 'object') {

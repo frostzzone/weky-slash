@@ -1,7 +1,8 @@
-import { Guild, GuildMember, Message, User } from 'discord.js';
+import { Guild, GuildMember, Message, CommandInteraction, User } from 'discord.js';
 
 interface Calc {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -14,7 +15,8 @@ interface Calc {
 }
 
 interface Chaos {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		description?: string;
@@ -39,7 +41,8 @@ interface Chaos {
 }
 
 interface Fast {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		description?: string;
@@ -57,7 +60,8 @@ interface Fast {
 }
 
 interface fight {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	opponent: User;
 	embed?: {
 		title?: string;
@@ -85,7 +89,8 @@ interface fight {
 }
 
 interface guessTheNumber {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		description?: string;
@@ -110,7 +115,8 @@ interface guessTheNumber {
 }
 
 interface guessThePokemon {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		description?: string;
@@ -122,13 +128,14 @@ interface guessThePokemon {
 	othersMessage?: string;
 	winMessage?: string;
 	loseMessage?: string;
-	time: ?number;
+	time?: number;
 	incorrectMessage?: string;
 	buttonText?: string;
 }
 
 interface lieSwatter {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -143,7 +150,8 @@ interface lieSwatter {
 }
 
 interface neverHaveIEver {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -156,7 +164,8 @@ interface neverHaveIEver {
 }
 
 interface quickClick {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -173,7 +182,8 @@ interface quickClick {
 }
 
 interface rockPaperScissors {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	opponent: User;
 	embed?: {
 		title?: string;
@@ -203,7 +213,8 @@ interface rockPaperScissors {
 }
 
 interface shuffleGuess {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -221,7 +232,8 @@ interface shuffleGuess {
 }
 
 interface snake {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		description?: string;
@@ -243,14 +255,16 @@ interface snake {
 }
 
 interface sudo {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	member: GuildMember;
 	text: string;
 	deleteMessage: boolean;
 }
 
 interface trivia {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed?: {
 		title?: string;
 		color?: string;
@@ -272,7 +286,8 @@ interface trivia {
 }
 
 interface wyptb {
-	message: Message;
+	message: Message | CommandInteraction;
+	slash?: boolean;
 	embed: {
 		title?: string;
 		color?: string;
@@ -284,7 +299,7 @@ interface wyptb {
 	othersMessage: string;
 }
 
-declare module 'weky' {
+declare module 'weky-slash' {
 	export function Calculator(options: Calc): void;
 	export function ChaosWords(options: Chaos): void;
 	export function FastType(options: Fast): void;
