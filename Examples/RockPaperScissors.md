@@ -2,36 +2,35 @@
 
 ```js
 await RockPaperScissors({
-	message: message,
-	slash: true,
-	opponent: message.mentions.users.first(),
-	embed: {
-		title: 'Rock Paper Scissors | Weky Development',
-		description: 'Press the button below to choose your element.',
-		color: '#5865F2',
-        footer: '©️ Weky Development',
-		timestamp: true
-	},
-	buttons: {
-		rock: 'Rock',
-		paper: 'Paper',
-		scissors: 'Scissors',
-		accept: 'Accept',
-		deny: 'Deny',
-	},
-	time: 60000,
-	acceptMessage:
-		'<@{{challenger}}> has challenged <@{{opponent}}> for a game of Rock Paper and Scissors!',
-	winMessage: 'GG, <@{{winner}}> won!',
-	drawMessage: 'This game is deadlock!',
-	endMessage: "<@{{opponent}}> didn't answer in time. So, I dropped the game!",
-	timeEndMessage:
-		"Both of you didn't pick something in time. So, I dropped the game!",
-	cancelMessage:
-		'<@{{opponent}}> refused to have a game of Rock Paper and Scissors with you!',
-	choseMessage: 'You picked {{emoji}}',
-	noChangeMessage: 'You cannot change your selection!',
-	othersMessage: 'Only {{author}} can use the buttons!',
-	returnWinner: false
+  message: message,
+  slash: true,
+  opponent: message.mentions.users.first(),
+  embed: {
+    title: "Pedra Papel Tesoura | Weky Development",
+    description: "Aperte o botão abaixo para escolher.",
+    color: "#5865F2",
+    footer: "©️ Weky Development",
+    timestamp: true,
+  },
+  buttons: {
+    rock: "Pedra",
+    paper: "Papel",
+    scissors: "Tesoura",
+    accept: "Aceitar",
+    deny: "Negar",
+  },
+  time: 60000,
+  acceptMessage:
+    "<@{{challenger}}> desafiou <@{{opponent}}> para um Pedra Papel Tesoura!",
+  winMessage: "GG, <@{{winner}}> ganhou!",
+  drawMessage: "Deu empate!",
+  endMessage: "<@{{opponent}}> não escolheu a tempo.",
+  timeEndMessage: "Ninguém escolheu a tempo.",
+  cancelMessage:
+    "<@{{opponent}}> se recusou a jogar Pedra Papel Tesoura com você!",
+  choseMessage: "Você escolheu {{emoji}}",
+  noChangeMessage: "Você não pode mudar sua escolha!",
+  othersMessage: "Apenas {{author}} pode usar os botões!",
+  returnWinner: false,
 });
 ```

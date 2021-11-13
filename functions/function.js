@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const fetch = require('node-fetch');
 const words = require('../data/words.json');
 const { boxConsole } = require('./boxConsole');
+const translate = require('@iamtraction/google-translate');
 const { MessageActionRow, MessageButton, CommandInteraction } = require('discord.js');
 
 module.exports = {
@@ -200,5 +201,17 @@ module.exports = {
 		}
 
 		return msg;
-	}
+	},
+	ptbr: async function (text, to = 'pt') {
+		let result;
+
+		try {
+			let response = await translate(text, { to });
+			result = response.text;
+		} catch (e) {
+			result = text;
+		}
+		
+		return result;
+	},
 };

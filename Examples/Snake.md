@@ -5,8 +5,8 @@ await Snake({
 	message: message,
 	slash: true,
 	embed: {
-		title: 'Snake | Weky Development',
-		description: 'GG, you scored **{{score}}** points!',
+		title: 'Jogo da Cobra | Weky Development',
+		description: 'GG, você fez **{{score}}** pontos!',
 		color: '#5865F2',
         footer: '©️ Weky Development',
 		timestamp: true
@@ -20,7 +20,7 @@ await Snake({
 		down: '⬇️',
 		left: '➡️',
 	},
-	othersMessage: 'Only <@{{author}}> can use the buttons!',
-	buttonText: 'Cancel'
+	othersMessage: 'Apenas <@{{author}}> pode usar os botões!',
+	buttonText: 'Cancelar'
 });
 ```

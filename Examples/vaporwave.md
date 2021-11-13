@@ -1,5 +1,5 @@
 # Example for vaporwave
 
 ```js
-vaporwave('Weky Development')
+vaporwave('Uma frase legal')
 ```

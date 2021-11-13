@@ -5,7 +5,7 @@ await Sudo({
 	message: message,
 	slash: true,
 	member: message.mentions.members.first(),
-	text: 'This is text!',
+	text: 'Isso é um texto!',
 	deleteMessage: false
 });
 ```

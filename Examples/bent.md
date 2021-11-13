@@ -1,5 +1,5 @@
 # Example for bent
 
 ```js
-bent('Weky Development')
+bent('Uma frase legal')
 ```

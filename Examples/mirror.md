@@ -1,5 +1,5 @@
 # Example for mirror
 
 ```js
-mirror('Weky Development')
+mirror('Uma frase legal')
 ```

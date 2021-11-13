@@ -1,5 +1,5 @@
 # Example for reverse Text
 
 ```js
-reverseText('Weky Development')
+reverseText('Uma frase legal')
 ```

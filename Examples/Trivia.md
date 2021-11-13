@@ -5,24 +5,24 @@ await Trivia({
 	message: message,
 	slash: true,
 	embed: {
-		title: 'Trivia | Weky Development',
-		description: 'You only have **{{time}}** to guess the answer!',
+		title: 'Conhecimentos Gerais | Weky Development',
+		description: 'Você tem apenas **{{time}}** para adivinhar a resposta!',
 		color: '#5865F2',
         footer: '©️ Weky Development',
 		timestamp: true
 	},
 	difficulty: 'hard',
-	thinkMessage: 'I am thinking',
+	thinkMessage: 'Estou pensando',
 	winMessage:
-		'GG, It was **{{answer}}**. You gave the correct answer in **{{time}}**.',
-	loseMessage: 'Better luck next time! The correct answer was **{{answer}}**.',
+		'GG, A resposta era **{{answer}}**. Você acertou em **{{time}}**.',
+	loseMessage: 'Boa sorte da próxima vez! A resposta correta era **{{answer}}**.',
 	emojis: {
 		one: '1️⃣',
 		two: '2️⃣',
 		three: '3️⃣',
 		four: '4️⃣',
 	},
-	othersMessage: 'Only <@{{author}}> can use the buttons!',
+	othersMessage: 'Apenas <@{{author}}> pode usar os botões!',
 	returnWinner: false
 });
 ```

@@ -1,5 +1,5 @@
 # Example for flip
 
 ```js
-flip('Weky Development')
+flip('Uma frase legal')
 ```
